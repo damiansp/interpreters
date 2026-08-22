@@ -42,24 +42,24 @@ class Scanner:
                 self.add_token(TokenType.SEMICOLON)
             case '*':
                 self.add_token(TokenType.STAR)
-            # case '!':
-            #     (self.add_token(TokenType.BANG_EQUAL) if self.match('=')
-            #      else self.add_token(TokenType.BANG))
-            # case '=':
-            #     (self.add_token(TokenType.EQUAL_EQUAL) if self.match('=')
-            #      else self.add_token(TokenType.EQUAL))
-            # case '<':
-            #     (self.add_token(TokenType.LESS_EQUAL) if self.match('=')
-            #      else self.add_token(TokenType.LESS))
-            # case '>':
-            #     (self.add_token(TokenType.GREATER_EQUAL) if self.match('=')
-            #      else self.add_token(TokenType.GREATER))
-            # case '/':
-            #     if self.match('/'):
-            #         while self.peek() != '\n' and not self.is_at_end():
-            #             self.advance()
-            #     else:
-            #         self.add_token(TokenType.SLASH)
+            case '!':
+                (self.add_token(TokenType.BANG_EQUAL) if self.match('=')
+                 else self.add_token(TokenType.BANG))
+            case '=':
+                (self.add_token(TokenType.EQUAL_EQUAL) if self.match('=')
+                 else self.add_token(TokenType.EQUAL))
+            case '<':
+                (self.add_token(TokenType.LESS_EQUAL) if self.match('=')
+                 else self.add_token(TokenType.LESS))
+            case '>':
+                (self.add_token(TokenType.GREATER_EQUAL) if self.match('=')
+                 else self.add_token(TokenType.GREATER))
+            case '/':
+                if self.match('/'):
+                    while self.peek() != '\n' and not self.is_at_end():
+                        self.advance()
+                else:
+                    self.add_token(TokenType.SLASH)
             # case ' ':
             #     pass
             # case '\r':
@@ -70,13 +70,13 @@ class Scanner:
             #     self.line += 1
             # case '"' | "'":
             #     self._string()
-            # case _:
+            case _:
             #     if char.isdigit():
             #         self._number()
             #     elif char.isalpha():
             #         self.identifier()
             #     else:
-            #         ErrorHandler.error(self.line, 'Unexpected charcter')
+                ErrorHandler.error(self.line, 'Unexpected charcter')
                     
     def advance(self) -> str:
         self.current += 1
@@ -86,11 +86,18 @@ class Scanner:
         text = self.source[self.start:self.current]
         self.tokens.append(Token(type, text, literal, self.line))
 
-    def match():
-        pass
+    def match(self, exected: str) -> bool:
+        if self.is_at_end():
+            return False
+        if self.source[self.current] != expected:
+            return False
+        self.current += 1
+        return True
 
-    def peek():
-        pass
+    def peek(self) -> str:
+        if self.is_at_end():
+            return '\0'
+        return self.source[self.current]
 
     def _string():
         pass
