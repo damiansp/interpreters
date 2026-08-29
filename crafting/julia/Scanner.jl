@@ -78,6 +78,26 @@ function scantoken(scanner::Scanner)
         addtoken(scanner, token_semicolon)
     elseif char == '*'
         addtoken(scanner, token_star)
+    elseif char == '!'
+        addtoken(scanner, match(scanner, '=') ? token_bangequal : token_bang)
+    elseif char == '='
+        addtoken(
+            scanner, match(scanner, '=') ? token_equalequal: token_equal)
+    elseif char == '<'
+        addtoken(scanner, match(scanner, '=') ? token_lessequal: token_less)
+    elseif char == '>'
+        addtoken(
+            scanner, match(scanner, '=') ? token_greaterequal: token_greater)
+    elseif char == '/'
+        if match(scanner, '/')
+            while peek(scanner) != '\n' && !isatend(scanner)
+                advance(scanner)
+            end
+        else
+            addtoken(scanner, token_slash)
+        end
+    else
+        loxerror(scanner.runner, scanner.line, "Unexpected character.")
     end
 end
 
@@ -93,6 +113,22 @@ function addtoken(scanner::Scanner, type::TokenType, literal=nothing)
     endind = prevind(scanner.source, scanner.current)
     lexeme = Symbol(scanner.source[scanner.start:endind])
     push!(scanner.tokens, Token(type, lexeme, literal, scanner.line))
+end
+
+
+function match(scanner::Scanner, expected::AbstractChar)
+    isatend(scanner) && return false
+    scanner.source[scanner.current] != expected && return false
+    nextchar(scanner)
+    true
+end
+
+
+isatend(scanner::Scanner) = scanner.current > ncodeunits(scanner.source)
+
+
+function peek(scanner::Scanner)
+    isatend(scanner) ? '\0' : scanner.source[scanner.current]
 end
 
 
