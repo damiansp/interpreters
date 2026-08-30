@@ -60,16 +60,16 @@ class Scanner:
                         self.advance()
                 else:
                     self.add_token(TokenType.SLASH)
-            # case ' ':
-            #     pass
-            # case '\r':
-            #     pass
-            # case '\t':
-            #     pass
-            # case '\n':
-            #     self.line += 1
-            # case '"' | "'":
-            #     self._string()
+            case ' ':
+                pass
+            case '\r':
+                pass
+            case '\t':
+                pass
+            case '\n':
+                self.line += 1
+            case '"' | "'":
+                self._string()
             case _:
             #     if char.isdigit():
             #         self._number()
@@ -99,8 +99,17 @@ class Scanner:
             return '\0'
         return self.source[self.current]
 
-    def _string():
-        pass
+    def _string(self) -> None:
+        while self.peek() != '"' and not self.is_at_end():
+            if self.peek() == '\n':
+                self.line += 1
+            self.advance()
+        if self.is_at_end():
+            ErrorHandler.error(self.line, 'Unterminated string.')
+            return
+        self.advance()
+        value = self.source[self.start + 1:self.current - 1]  # strip ""
+        self.add_token(TokenType.STRING, value)
 
     def _number():
         pass
