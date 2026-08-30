@@ -96,6 +96,12 @@ function scantoken(scanner::Scanner)
         else
             addtoken(scanner, token_slash)
         end
+    elseif char == ' ' || char == '\r' || char == '\t'
+        # ignore whitespace
+    elseif char == '\n'
+        scanner.line += 1
+    elseif char == '"'
+        scanstring(scanner)
     else
         loxerror(scanner.runner, scanner.line, "Unexpected character.")
     end
@@ -129,6 +135,24 @@ isatend(scanner::Scanner) = scanner.current > ncodeunits(scanner.source)
 
 function peek(scanner::Scanner)
     isatend(scanner) ? '\0' : scanner.source[scanner.current]
+end
+
+
+function scanstring(scanner::Scanner)
+    while peek(scanner) != '"' && !isatend(scanner)
+        peek(scanner) == '\n' && (scanner.line += 1)
+        advance(scanner)
+    end
+    if isatend(scanner)
+        loxerror(scanner.runner, scanner.line, "Unterminated string.")
+        return
+    end
+    # Get pos of last char of str now, before consuming closing quote
+    lastchar = prevind(scanner.source, scanner.current)
+    advance(scanner)  # past closing "
+    # trim quotes
+    firstchar = nextind(scanner.source, scanner.start)
+    addtoken(scanner, token_string, scanner.source[firstchar:lastchar])
 end
 
 
