@@ -71,12 +71,12 @@ class Scanner:
             case '"' | "'":
                 self._string()
             case _:
-            #     if char.isdigit():
-            #         self._number()
-            #     elif char.isalpha():
-            #         self.identifier()
-            #     else:
-                ErrorHandler.error(self.line, 'Unexpected charcter')
+                if char.isdigit():
+                    self._number()
+                elif char.isalpha():
+                    self.identifier()
+                else:
+                    ErrorHandler.error(self.line, 'Unexpected charcter')
                     
     def advance(self) -> str:
         self.current += 1
@@ -111,8 +111,31 @@ class Scanner:
         value = self.source[self.start + 1:self.current - 1]  # strip ""
         self.add_token(TokenType.STRING, value)
 
-    def _number():
-        pass
+    def _number(self) -> None:
+        while self.peek().isdigit():
+            self.advance()
+        if self.peek() == '.' and self.peek_next().isdigit():
+            self.advance()
+            while self.peek().isdigit():
+                self.advance()
+        self.add_token(
+            TokenType.NUMBER, float(self.source[self.start:self.current]))
 
-    def identifier():
+    def peek_next(self) -> str:
+        if self.current + 1 >= len(self.source):
+            return '\0'
+        return self.source[self.current + 1]
+
+    def identifier(self) -> None:
+        while self.is_alpha_numeric(self.peek()):
+            self.advance()
+        text = self.source[self.start:self.current]
+        _type = self.keywords.get(text, TokenType.IDENTIFIER)
+        literal = {'true': True, 'false': False, 'nil': None}.get(text)
+        if _rype is None:
+            _type = TokenType.IDENTIFIER
+        self.add_token(_type, literal)
+
+    def is_alpha_numeric(self, char: str) -> bool:
+        return char.isalpha() or char.isdigit()
         
