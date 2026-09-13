@@ -8,6 +8,22 @@ class Scanner:
         self.start = 0
         self.current = 0
         self.line = 1
+        self.keywords: Dict[str, TokenType] = {
+            'and': TokenType.AND,
+            'class': TokenType.CLASS,
+            'else': TokenType.ELSE,
+            'false': TokenType.FALSE,
+            'for': TokenType.FOR,
+            'fun': TokenType.FUN,
+            'if': TokenType.IF,
+            'nil': TokenType.NIL,
+            'or': TokenType.OR,
+            'return' TokenType.RETURN,
+            'print': TokenType.PRINT,
+            'super': TokenType.SUPER,
+            'true': TokenType.TRUE,
+            'var': TokenType.VAR,
+            'while': TokenType.WHILE}
 
     def scan_tokens(self) -> list[Token]:
         while not self.is_at_end():
@@ -132,7 +148,7 @@ class Scanner:
         text = self.source[self.start:self.current]
         _type = self.keywords.get(text, TokenType.IDENTIFIER)
         literal = {'true': True, 'false': False, 'nil': None}.get(text)
-        if _rype is None:
+        if _type is None:
             _type = TokenType.IDENTIFIER
         self.add_token(_type, literal)
 
