@@ -102,6 +102,10 @@ function scantoken(scanner::Scanner)
         scanner.line += 1
     elseif char == '"'
         scanstring(scanner)
+    elseif isdigit(char)
+        scannumber(scanner)
+    elseif isalpha(char)
+        scanidentifier(scanner)
     else
         loxerror(scanner.runner, scanner.line, "Unexpected character.")
     end
@@ -153,6 +157,39 @@ function scanstring(scanner::Scanner)
     # trim quotes
     firstchar = nextind(scanner.source, scanner.start)
     addtoken(scanner, token_string, scanner.source[firstchar:lastchar])
+end
+
+
+function scannumber(scanner::Scanner)
+    while isdigit(peek(scanner))
+        advance(scanner)
+    end
+    if peek(scanner) == '.' && isdigit(peeknext(scanner))
+        advance(scanner)  # consume '.'
+        while isdigit(peek(scanner))
+            advance(scanner)
+        end
+    end
+    lastchar = prevind(scanner.source, scanner.current)
+    val = parse(Float64, scanner.source[scanner.start:lastchar])
+    addtoken(scanner, token_number, val)
+end
+
+
+function peeknext(scanner::Scanner)
+    next = nextind(scanner.source, scanner.current)
+    next > length(scanner.source) ? '\0' : scanner.source[next]
+end
+
+
+function scanidentifier(scanner::Scanner)
+    while isalphanumeric(peek(scanner))
+        advance(scanner)
+    end
+    lastind = prevind(scanner.source, scanner.current)
+    text = scanner.source[scanner.start:lastind]
+    type = get(keywords, text, token_identifier)
+    addtoken(scanner, type)
 end
 
 

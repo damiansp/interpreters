@@ -120,7 +120,7 @@ private void number() {
 
 
 private char peekNext() {
-  if (current + 1 >= source.lenght()) { return '\0'; }
+  if (current + 1 >= source.length()) { return '\0'; }
   return source.charAt(current + 1);
 }
 
@@ -134,6 +134,36 @@ private boolean isAlpha(char c) {
 
 
 private void identifier() {
-  while (isAlhphaNumeric(peek())) { advance(); }
-  addToken(IDENTIFIER);
+  while (isAlphaNumeric(peek())) { advance(); }
+  String text = source.substring(start, current);
+  TokenType type = keywords.get(text);
+  if (type == null) { type = IDENTIFIER; }
+  addToken(type);
+}
+
+
+private boolean isAlphaNumeric(char c) {
+  return isAlpha(c) || isDigit(c);
+}
+
+
+private static final Map<String, TokenType> keywords;
+static {
+  keywords = new HashMap<>();
+  keywords.put("and", AND);
+  keywords.put("class", CLASS);
+  keywords.put("else", ELSE);
+  keywords.put("false", FALSE);
+  keywords.put("for", FOR);
+  keywords.put("fun", FUN);
+  keywords.put("if", IF);
+  keywords.put("nil", NIL);
+  keywords.put("or", OR);
+  keywords.put("print", PRINT);
+  keywords.put("return", RETURN);
+  keywords.put("super", SUPER);
+  keywords.put("this", THIS);
+  keywords.put("true", TRUE);
+  keywords.put("var", VAR);
+  keywords.put("while", WHILE);
 }
