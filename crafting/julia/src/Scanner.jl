@@ -160,6 +160,9 @@ function scanstring(scanner::Scanner)
 end
 
 
+islapha(c) = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+
+
 function scannumber(scanner::Scanner)
     while isdigit(peek(scanner))
         advance(scanner)
@@ -191,6 +194,9 @@ function scanidentifier(scanner::Scanner)
     type = get(keywords, text, token_identifier)
     addtoken(scanner, type)
 end
+
+
+isalphanumeric(c) = isalpha(c) || isdigit(c)
 
 
 end  # module
